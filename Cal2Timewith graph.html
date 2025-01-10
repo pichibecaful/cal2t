@@ -1,0 +1,387 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calcitonin Doubling Time</title>
+    <style>
+        /* General Styles */
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #4A90E2, #9013FE);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .container {
+            max-width: 1200px;
+            margin: auto;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 16px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            overflow: hidden;
+        }
+        h1 {
+            font-size: 2.5em;
+            color: #ffffff;
+            margin-bottom: 5px;
+            text-align: center;
+        }
+        h3 {
+            font-size: 1.2em;
+            color: #E0E0E0;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        h2 {
+            font-size: 1.8em;
+            margin-top: 30px;
+            color: #E0E0E0;
+        }
+
+        /* Buttons */
+        button {
+            display: inline-block;
+            padding: 12px 20px;
+            font-size: 1em;
+            color: #fff;
+            background: linear-gradient(90deg, #6A5ACD, #4A90E2);
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: 0.3s ease;
+        }
+        button:hover {
+            background: linear-gradient(90deg, #4A90E2, #6A5ACD);
+            transform: translateY(-2px);
+            box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Input Fields */
+        input {
+            width: 100%;
+            padding: 10px 15px;
+            margin-bottom: 15px;
+            border-radius: 6px;
+            border: 1px solid #ddd;
+            font-size: 1em;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .measurement-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .measurement-row input {
+            width: calc(50% - 5px);
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            margin-top: 15px;
+            border-collapse: collapse;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        th, td {
+            padding: 12px 20px;
+            text-align: left;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #E0E0E0;
+        }
+        th {
+            background: rgba(0, 0, 0, 0.2);
+            color: #FFFFFF;
+            font-weight: bold;
+        }
+        tr:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Graph Section */
+        .graph-container {
+            margin-top: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Results Section */
+        .result {
+            font-size: 1.2em;
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.2);
+            color: #ffffff;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        /* Search Bar */
+        .search-bar {
+            position: relative;
+        }
+        .search-bar input {
+            padding: 12px 15px;
+            border-radius: 6px;
+            width: calc(100% - 40px);
+            display: inline-block;
+            border: 1px solid #ddd;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Calcitonin Doubling Time</h1>
+        <h3>by Department of Endocrine Surgery, Christian Medical College, Vellore</h3>
+
+        <div class="section">
+            <h2>Calcitonin Measurements</h2>
+            <div id="calcitoninTable">
+                <div class="measurement-row">
+                    <input type="date" placeholder="Date" id="date0">
+                    <input type="number" placeholder="Calcitonin Value (pg/mL)" id="value0">
+                </div>
+            </div>
+            <button onclick="addCalcitoninRow()">Add Row</button>
+            <button onclick="calculateDoublingTime()">Calculate Doubling Time</button>
+            <div id="doublingTimeResult" class="result"></div>
+        </div>
+
+        <div class="section">
+            <h2>Patient Management</h2>
+            <div class="input-group">
+                <input type="text" id="patientName" placeholder="Enter Patient Name">
+                <input type="text" id="patientID" placeholder="Enter Patient ID">
+                <input type="text" id="diagnosis" placeholder="Enter Diagnosis">
+                <button onclick="addPatient()">Add Patient</button>
+            </div>
+            <div class="search-bar">
+                <input type="text" id="searchInput" placeholder="Search Patients..." onkeyup="searchPatient()">
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Name</th>
+                        <th>ID</th>
+                        <th>Diagnosis</th>
+                        <th>Doubling Time (days)</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="patientList"></tbody>
+            </table>
+            <button onclick="exportData()">Export Data</button>
+        </div>
+
+        <div id="graphSection" class="graph-container" style="display: none;">
+            <h2>Graphical Representation</h2>
+            <canvas id="calcitoninGraph" width="800" height="400"></canvas>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        let patients = [];
+        let currentPatientIndex = null;
+        let chartInstance = null;
+
+        function addPatient() {
+            const name = document.getElementById("patientName").value.trim();
+            const id = document.getElementById("patientID").value.trim();
+            const diagnosis = document.getElementById("diagnosis").value.trim();
+
+            if (!name || !id || !diagnosis) {
+                alert("Please fill all fields!");
+                return;
+            }
+
+            patients.push({ name, id, diagnosis, calcitoninData: [], doublingTime: null });
+            updatePatientList();
+            clearPatientForm();
+        }
+
+        function clearPatientForm() {
+            document.getElementById("patientName").value = "";
+            document.getElementById("patientID").value = "";
+            document.getElementById("diagnosis").value = "";
+        }
+
+        function updatePatientList(filteredPatients = patients) {
+            const tableBody = document.getElementById("patientList");
+            tableBody.innerHTML = "";
+            filteredPatients.forEach((patient, index) => {
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td>${patient.name}</td>
+                    <td>${patient.id}</td>
+                    <td>${patient.diagnosis}</td>
+                    <td>${patient.doublingTime !== null ? patient.doublingTime + " days" : "N/A"}</td>
+                    <td>
+                        <button onclick="selectPatient(${patients.indexOf(patient)})">View</button>
+                        <button onclick="deletePatient(${patients.indexOf(patient)})">Delete</button>
+                        <button onclick="displayGraph(${patients.indexOf(patient)})">Graph</button>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        function searchPatient() {
+            const query = document.getElementById("searchInput").value.toLowerCase();
+            const filteredPatients = patients.filter(patient =>
+                patient.name.toLowerCase().includes(query) || patient.id.toLowerCase().includes(query)
+            );
+            updatePatientList(filteredPatients);
+        }
+
+        function selectPatient(index) {
+            currentPatientIndex = index;
+            const patient = patients[index];
+            updateCalcitoninTable(patient.calcitoninData);
+            document.getElementById("doublingTimeResult").textContent = ""; // Reset doubling time display
+        }
+
+        function deletePatient(index) {
+            patients.splice(index, 1);
+            updatePatientList();
+            if (currentPatientIndex === index) {
+                document.getElementById("calcitoninTable").innerHTML = "";
+                document.getElementById("doublingTimeResult").textContent = "";
+                currentPatientIndex = null;
+                document.getElementById("graphSection").style.display = "none"; // Hide graph section
+            }
+        }
+
+        function updateCalcitoninTable(data) {
+            const tableBody = document.getElementById("calcitoninTable");
+            tableBody.innerHTML = "";
+            data.forEach((entry, index) => {
+                tableBody.innerHTML += `
+                    <div class="measurement-row">
+                        <input type="date" value="${entry.date}" onchange="updateCalcitoninDate(${index}, this.value)">
+                        <input type="number" value="${entry.value}" onchange="updateCalcitoninValue(${index}, this.value)" placeholder="pg/mL">
+                    </div>
+                `;
+            });
+        }
+
+        function addCalcitoninRow() {
+            if (currentPatientIndex === null) {
+                alert("Select a patient first!");
+                return;
+            }
+            const patient = patients[currentPatientIndex];
+            patient.calcitoninData.push({ date: "", value: "" });
+            updateCalcitoninTable(patient.calcitoninData);
+        }
+
+        function updateCalcitoninDate(index, value) {
+            if (currentPatientIndex !== null) {
+                patients[currentPatientIndex].calcitoninData[index].date = value;
+            }
+        }
+
+        function updateCalcitoninValue(index, value) {
+            if (currentPatientIndex !== null) {
+                patients[currentPatientIndex].calcitoninData[index].value = value;
+            }
+        }
+
+        function calculateDoublingTime() {
+            if (currentPatientIndex === null) {
+                alert("Select a patient first!");
+                return;
+            }
+            const data = patients[currentPatientIndex].calcitoninData.filter(d => d.date && d.value);
+            if (data.length < 2) {
+                alert("At least two measurements are required!");
+                return;
+            }
+            data.sort((a, b) => new Date(a.date) - new Date(b.date));
+            const t0 = new Date(data[0].date);
+            const tN = new Date(data[data.length - 1].date);
+            const C0 = data[0].value;
+            const CN = data[data.length - 1].value;
+            const deltaT = (tN - t0) / (1000 * 60 * 60 * 24); // Difference in days
+            const doublingTime = (deltaT * Math.log(2)) / Math.log(CN / C0);
+            patients[currentPatientIndex].doublingTime = doublingTime.toFixed(2);
+            document.getElementById("doublingTimeResult").textContent = `Doubling Time: ${doublingTime.toFixed(2)} days`;
+            updatePatientList(); // Update patient list to reflect new doubling time
+        }
+
+        function exportData() {
+            const dataStr = JSON.stringify(patients, null, 2);
+            const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
+            const exportFileDefaultName = 'patients_data.json';
+            const linkElement = document.createElement('a');
+            linkElement.setAttribute('href', dataUri);
+            linkElement.setAttribute('download', exportFileDefaultName);
+            linkElement.click();
+        }
+
+        function displayGraph(index) {
+            const patient = patients[index];
+            if (!patient.calcitoninData || patient.calcitoninData.length < 2) {
+                alert("Not enough data points to plot a graph!");
+                return;
+            }
+            const dataPoints = patient.calcitoninData
+                .filter(d => d.date && d.value)
+                .map(d => ({ x: new Date(d.date), y: Number(d.value) }))
+                .sort((a, b) => a.x - b.x);
+
+            const ctx = document.getElementById("calcitoninGraph").getContext("2d");
+
+            if (chartInstance) {
+                chartInstance.destroy();
+            }
+
+            chartInstance = new Chart(ctx, {
+                type: "line",
+                data: {
+                    labels: dataPoints.map(dp => dp.x.toLocaleDateString()),
+                    datasets: [
+                        {
+                            label: "Calcitonin Measurements",
+                            data: dataPoints.map(dp => dp.y),
+                            borderColor: "#4A90E2",
+                            fill: false,
+                        },
+                    ],
+                },
+                options: {
+                    scales: {
+                        x: {
+                            title: { display: true, text: "Date" },
+                        },
+                        y: {
+                            title: { display: true, text: "Calcitonin Value (pg/mL)" },
+                        },
+                    },
+                },
+            });
+
+            document.getElementById("graphSection").style.display = "block";
+        }
+    </script>
+</body>
+</html>
